@@ -23,7 +23,7 @@ public class PacketInputStream{
     }
 
     public long readVarLong() throws IOException {
-        if(stream.read() != 0x09) throw new RuntimeException("Incorrect Data Type: Expected VarInt-0x09");
+        if(stream.read() != 0x09) throw new RuntimeException("Incorrect Data Type: Expected VarLong-0x09");
         return VarLengthNumbers.readVarLong(stream::read);
     }
 
