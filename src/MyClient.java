@@ -20,7 +20,6 @@ public class MyClient {
 
         // Initialize the client socket.
         try {
-
             clientSocket = new DatagramSocket();
 
         } catch(SocketException ex) {
@@ -56,7 +55,7 @@ public class MyClient {
                             exitBuffer,
                             exitBuffer.length,
                             serverAddress,
-                            ScuffedProtocol.PORT
+                            EMAP.PORT
                         ));
                         clientSocket.close();
                         break;
@@ -68,14 +67,14 @@ public class MyClient {
                         messageBuffer,
                         messageBuffer.length,
                         serverAddress,
-                        ScuffedProtocol.PORT
+                        EMAP.PORT
                     ));
 
                     var incomingPacket = new DatagramPacket(
                         buffer,
                         buffer.length,
                         serverAddress,
-                        ScuffedProtocol.PORT
+                        EMAP.PORT
                     );
                     clientSocket.receive(incomingPacket);
 

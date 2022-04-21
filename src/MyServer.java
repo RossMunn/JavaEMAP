@@ -17,9 +17,9 @@ public class MyServer {
 
         try {
 
-            serverSocket = new DatagramSocket(ScuffedProtocol.PORT);
+            serverSocket = new DatagramSocket(EMAP.PORT);
             System.out.println(
-                    "Now listening on port " + ScuffedProtocol.PORT + "!"
+                    "Now listening on port " + EMAP.PORT
             );
 
             byte[] buffer = new byte[256];

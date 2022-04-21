@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/JavaUMAP.iml" filepath="$PROJECT_DIR$/JavaUMAP.iml" />
+      <module fileurl="file://$PROJECT_DIR$/JavaEMAP.iml" filepath="$PROJECT_DIR$/JavaEMAP.iml" />
     </modules>
   </component>
 </project>
