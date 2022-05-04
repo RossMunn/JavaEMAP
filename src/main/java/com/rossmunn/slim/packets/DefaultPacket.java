@@ -4,6 +4,7 @@ import com.rossmunn.slim.network.PacketInputStream;
 import com.rossmunn.slim.network.PacketOutputStream;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class DefaultPacket extends Packet {
 
@@ -38,6 +39,6 @@ public class DefaultPacket extends Packet {
 
     @Override
     public String toString() {
-        return name + message;
+        return super.toString() + String.format("Name: %s%n", name) + String.format("Message: %s%n", message);
     }
 }

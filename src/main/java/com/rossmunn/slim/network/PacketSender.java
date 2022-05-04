@@ -5,6 +5,7 @@ import com.rossmunn.slim.packets.Magic;
 import com.rossmunn.slim.packets.Packet;
 import com.rossmunn.slim.data.UUIDUtil;
 import com.rossmunn.slim.data.VarLengthNumbers;
+import net.openhft.hashing.LongHashFunction;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -28,6 +29,7 @@ public class PacketSender {
         ByteBuffer sendBuffer = ByteBuffer.allocate(sendBufferSize);
 
         byte[] hash = new byte[8];
+        var hashinator = LongHashFunction.xx3();
 
         int index = 0;
         int byteIndex = 0;
@@ -54,7 +56,7 @@ public class PacketSender {
 
             // Hash
             sendBuffer.put(DataTypeId.FIXED_BYTES);
-            sendBuffer.put(hash);
+            sendBuffer.putLong(hashinator.hashBytes(packetBytes, byteIndex, payloadLength));
 
             // Index
             sendBuffer.put(DataTypeId.INT);
@@ -99,26 +101,46 @@ public class PacketSender {
 
     private static byte[] getPacketBytes(Packet packet) throws IOException {
 
-        //write Header and Body of packet
+        // Write the header and body into a byte array first, so it can be used to compute the prologue.
+        ByteArrayOutputStream packetBodyData = new ByteArrayOutputStream();
+        DataOutputStream packetDataOutput = new DataOutputStream(packetBodyData);
 
-        ByteArrayOutputStream packetData = new ByteArrayOutputStream();
-        DataOutputStream packetDataOutput = new DataOutputStream(packetData);
-
+        // Snowflake
+        packetDataOutput.write(DataTypeId.FIXED_BYTES);
         packetDataOutput.write(packet.getSnowflake());
+
+        // Packet ID
+        packetDataOutput.write(DataTypeId.VAR_INT);
         VarLengthNumbers.writeVarInt(packetDataOutput::writeByte, packet.getPacketId());
 
-        PacketOutputStream packetStream = new PacketOutputStream(packetDataOutput);
-        packet.writeData(packetStream);
+        // Body
+        packet.writeData(new PacketOutputStream(packetDataOutput));
 
-        int size = packetData.size(); //get length of packet
+        // Then, assemble the packet contents.
+        packetDataOutput.close();
+        packetBodyData.close();
+        byte[] headerAndBody = packetBodyData.toByteArray();
 
-        ByteArrayOutputStream outputBytes = new ByteArrayOutputStream(size+10);
-        DataOutputStream output = new DataOutputStream(outputBytes);
+        // Then assemble the packet.
 
-        VarLengthNumbers.writeVarInt(output::writeByte, size);
-        output.write(packetData.toByteArray());
+        ByteArrayOutputStream packetData = new ByteArrayOutputStream();
+        packetDataOutput = new DataOutputStream(packetData);
 
-        return Arrays.copyOf(outputBytes.toByteArray(), output.size());
+        // Magic
+        packetDataOutput.write(DataTypeId.MAGIC);
+        packetDataOutput.writeInt(Magic.PACKET);
+
+        // Length
+        packetDataOutput.write(DataTypeId.VAR_INT);
+        VarLengthNumbers.writeVarInt(packetDataOutput::writeByte, headerAndBody.length);
+
+        // Header and Body
+        packetDataOutput.write(headerAndBody);
+
+        // Clean up and return bytes.
+        packetDataOutput.close();
+        packetData.close();
+        return packetData.toByteArray();
     }
 
     private static boolean receiveAck(DatagramSocket socket, byte[] receiveBufferData, byte[] snowflake, byte[] hash, int index) throws IOException {

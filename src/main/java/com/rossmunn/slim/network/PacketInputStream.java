@@ -5,6 +5,8 @@ import com.rossmunn.slim.data.VarLengthNumbers;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
 import static com.rossmunn.slim.packets.DataTypeId.*;
 
 public class PacketInputStream{
@@ -86,8 +88,7 @@ public class PacketInputStream{
     }
 
     public String readString() throws IOException {
-        int b = stream.readByte();
-        if(b != STRING){
+        if(stream.read() != STRING){
             exception("String", STRING);
         }
         int length = VarLengthNumbers.readVarInt(stream::readByte);
@@ -95,8 +96,8 @@ public class PacketInputStream{
         byte[] data = new byte[length];
         int read = stream.read(data);
 
-        if(length!=0 && read != length) throw new IOException("Incorrect Packet Size");
-        return new String(data);
+        if(length != 0 && read != length) throw new IOException("Incorrect String Size");
+        return new String(data, StandardCharsets.UTF_8);
     }
 
     public byte[] readBytes() throws IOException {

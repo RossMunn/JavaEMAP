@@ -5,16 +5,13 @@ import com.rossmunn.slim.data.VarLengthNumbers;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 import static com.rossmunn.slim.packets.DataTypeId.*;
 
 public class PacketOutputStream {
 
     private final DataOutputStream stream;
-
-    public PacketOutputStream(OutputStream stream) {
-        this(new DataOutputStream(stream));
-    }
 
     public PacketOutputStream(DataOutputStream stream){
         this.stream = stream;
@@ -99,8 +96,9 @@ public class PacketOutputStream {
 
     public void writeString(String value) throws IOException {
         stream.writeByte(STRING);
-        VarLengthNumbers.writeVarInt(stream::writeByte, value.length());
-        byte[] bytes = value.getBytes();
+        byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
+
+        VarLengthNumbers.writeVarInt(stream::writeByte, bytes.length);
         stream.write(bytes);
     }
 

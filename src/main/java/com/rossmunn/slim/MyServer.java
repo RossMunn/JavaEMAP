@@ -22,7 +22,7 @@ public class MyServer {
             serverSocket = new DatagramSocket(SLIM.PORT);
             System.out.println("Now listening on port " + SLIM.PORT);
 
-            System.out.println("Packet received:" + PacketReceiver.receivePacket(serverSocket));
+            System.out.println("Packet received:" + PacketReceiver.receiveChunk(serverSocket));
 
         } catch (SocketException ex) {
             System.err.println(

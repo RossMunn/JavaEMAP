@@ -1,5 +1,6 @@
 package com.rossmunn.slim;
 
+import com.rossmunn.slim.network.PacketReceiver;
 import com.rossmunn.slim.packets.DefaultPacket;
 import com.rossmunn.slim.packets.Packet;
 import com.rossmunn.slim.network.PacketSender;
@@ -16,10 +17,10 @@ public class MyClient {
 
     public static void main(String[] args) throws IOException {
         MyClient client = new MyClient();
-        client.start();
+        client.connect();
     }
 
-    public void start() throws IOException {
+    public void connect() throws IOException {
 
         Scanner scanner = new Scanner(System.in);
 
@@ -43,14 +44,37 @@ public class MyClient {
             return;
         }
 
-//        Packet packet = new ArrayPacket(1, 2, 3, 4, 5);//new DefaultPacket("George", "says fuck!");
+        var listenerThread = new Thread(() -> {
+            while (!clientSocket.isClosed()) {
+                try {
+                    Packet packet;
+                    if ((packet = PacketReceiver.receiveChunk(clientSocket)) != null) {
+                        // Packet received.
+                        System.out.println(packet);
+                    }
 
-        Packet packet = new DefaultPacket("Johnderer Mold", "🅱️ungus");
-        clientSocket.setSoTimeout(1000);
+                    System.out.println();
+                } catch (IOException ex) {
+                    System.err.println("Error receiving packet.");
+                    ex.printStackTrace();
+                }
+            }
+
+            System.out.println();
+            System.out.println("Connection closed.");
+        });
+
+        listenerThread.start();
+//        try {
+//            listenerThread.join();
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
+
+        Packet packet = new DefaultPacket("Samderer Mold", "Bungus");
         PacketSender.sendPacket(packet, clientSocket, serverAddress, SLIM.PORT);
+
     }
-
-
 
 }
 

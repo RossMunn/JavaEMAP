@@ -30,5 +30,9 @@ public abstract class Packet {
 
     public abstract void readData(PacketInputStream in) throws IOException;
 
+    @Override
+    public String toString() {
+        return "-- Packet: #" + id + "\n";
+    }
 }
 

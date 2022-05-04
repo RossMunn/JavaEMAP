@@ -1,2 +1,2 @@
 # SLIM-Protocal-Implimentation
-Java UMAP Implimentation
+Java SLIM Implimentation

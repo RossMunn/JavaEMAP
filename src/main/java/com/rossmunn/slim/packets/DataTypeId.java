@@ -21,7 +21,6 @@ public class DataTypeId {
             BYTES = (byte) 0x21,
             ARRAY = (byte) 0x22,
             FIXED_BYTES = (byte) 0xFE,
-
             MAGIC = (byte) 0xFF;
 }
 
