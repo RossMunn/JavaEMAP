@@ -5,7 +5,7 @@ import data.VarLengthNumbers;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import static Packets.DataTypeId.*;
+import static packets.DataTypeId.*;
 
 public class PacketInputStream{
 

@@ -1,4 +1,4 @@
-package Packets;
+package packets;
 
 import network.PacketInputStream;
 import network.PacketOutputStream;
@@ -10,14 +10,16 @@ public class DefaultPacket extends Packet {
     public String name;
     public String message;
 
-    public DefaultPacket(){}
+    public DefaultPacket() {
+        super (0x0);
+    }
 
     public DefaultPacket(String name, String message) {
+        super(0x0);
         this.name = name;
         this.message = message;
     }
 
-    @Override
     public int getPacketId() {
         return 0;
     }

@@ -1,6 +1,8 @@
 package network;
 
-import Packets.Packet;
+import packets.DataTypeId;
+import packets.Magic;
+import packets.Packet;
 import data.UUIDUtil;
 import data.VarLengthNumbers;
 
@@ -22,29 +24,52 @@ public class PacketSender {
         byte[] packetBytes = getPacketBytes(packet);
 
         int sendBufferSize = 1024;
-        int maxLength = 994; //max length of body data in chunk
+        int maxLength = 980; //max length of body data in chunk
         ByteBuffer sendBuffer = ByteBuffer.allocate(sendBufferSize);
 
-        byte[] receiveBufferData = new byte[28];
         byte[] hash = new byte[8];
 
-        int index = 1;
+        int index = 0;
         int byteIndex = 0;
-        while(byteIndex!= packetBytes.length){
-            //send packet
 
+        int count = (int) Math.ceil(packetBytes.length / (float) maxLength);
+
+        while(byteIndex != packetBytes.length) {
             sendBuffer.rewind(); //reset buffer
-            int read = Math.min(packetBytes.length-byteIndex, maxLength); //get size of body
-            sendBuffer.putShort((short) read);
-            sendBuffer.put(packet.getSnowflake());
-            sendBuffer.put(hash);
-            sendBuffer.putInt(index);
-            sendBuffer.put(packetBytes, byteIndex, read);
 
-            byteIndex += read;
+            // Compute the size of the body
+            int payloadLength = Math.min(packetBytes.length - byteIndex, maxLength);
+
+            // Magic
+            sendBuffer.put(DataTypeId.MAGIC);
+            sendBuffer.putInt(Magic.CHUNK);
+
+            // Length
+            sendBuffer.put(DataTypeId.SHORT);
+            sendBuffer.putShort((short) payloadLength);
+
+            // Snowflake
+            sendBuffer.put(DataTypeId.FIXED_BYTES);
+            sendBuffer.put(packet.getSnowflake());
+
+            // Hash
+            sendBuffer.put(DataTypeId.FIXED_BYTES);
+            sendBuffer.put(hash);
+
+            // Index
+            sendBuffer.put(DataTypeId.INT);
+            sendBuffer.putInt(index);
+
+            // Count
+            sendBuffer.put(DataTypeId.INT);
+            sendBuffer.putInt(count);
+
+            // Payload (Body)
+            sendBuffer.put(packetBytes, byteIndex, payloadLength);
+            byteIndex += payloadLength;
 
             int errorCount = 0;
-            while(true) {
+            while (true) {
 
                 //send packet
                 sendBuffer.flip();
@@ -57,12 +82,14 @@ public class PacketSender {
                 );
 
                 socket.send(packetToSend);
-                if(receiveAcknowledgement(socket, receiveBufferData, packet.getSnowflake(), hash, index)){
+
+                byte[] receiveAckData = new byte[44];
+                if(receiveAck(socket, receiveAckData, packet.getSnowflake(), hash, index)){
                     index++;
                     break;
                 }
                 errorCount++;
-                if(errorCount>=5){
+                if(errorCount >= 5){
                     return;
                 }
 
@@ -94,7 +121,7 @@ public class PacketSender {
         return Arrays.copyOf(outputBytes.toByteArray(), output.size());
     }
 
-    private static boolean receiveAcknowledgement(DatagramSocket socket, byte[] receiveBufferData,  byte[] snowflake, byte[] hash, int index) throws IOException {
+    private static boolean receiveAck(DatagramSocket socket, byte[] receiveBufferData, byte[] snowflake, byte[] hash, int index) throws IOException {
 
         DatagramPacket incomingPacket = new DatagramPacket(receiveBufferData, receiveBufferData.length);
         try {
@@ -117,7 +144,7 @@ public class PacketSender {
 
         //check index
         int indexToCheck = ByteBuffer.wrap(receiveBufferData, 24, 4).getInt();
-        if(indexToCheck!=index) return false;
+        if(indexToCheck != index) return false;
 
         //all good
         return true;

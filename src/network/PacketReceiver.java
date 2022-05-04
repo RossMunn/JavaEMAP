@@ -1,7 +1,7 @@
 package network;
 
-import Packets.Packet;
-import Packets.Packets;
+import packets.Packet;
+import packets.Packets;
 import data.VarLengthNumbers;
 
 import java.io.ByteArrayInputStream;
@@ -10,7 +10,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 public class PacketReceiver {
 
@@ -59,8 +58,6 @@ public class PacketReceiver {
         int packetId = VarLengthNumbers.readVarInt(packetBuffer::get);
 
         Packet p = Packets.getPacket(packetId);
-
-
         if(p == null) return null;
 
         byte[] data = new byte[packetBuffer.remaining()];
@@ -90,9 +87,9 @@ public class PacketReceiver {
 
 }
 
-class Chunk {
+class Chunk{
 
-    static Chunk fromBytes(byte[] bytes) {
+    static Chunk fromBytes(byte[] bytes){
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
 
         short length = buffer.getShort();
@@ -118,11 +115,11 @@ class Chunk {
 
     byte[] data;
 
-    public Chunk() {
+    public Chunk(){
 
     }
 
-    public Chunk(short length, byte[] snowflake, byte[] hash, int index, byte[] data) {
+    public Chunk(short length, byte[] snowflake, byte[] hash, int index, byte[] data){
         this.length = length;
         this.snowflake = snowflake;
         this.hash = hash;

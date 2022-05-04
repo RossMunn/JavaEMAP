@@ -6,11 +6,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static Packets.DataTypeId.*;
+import static packets.DataTypeId.*;
 
 public class PacketOutputStream {
 
-    private DataOutputStream stream;
+    private final DataOutputStream stream;
 
     public PacketOutputStream(OutputStream stream) {
         this(new DataOutputStream(stream));

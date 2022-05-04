@@ -1,6 +1,5 @@
-import Packets.ArrayPacket;
-import Packets.DefaultPacket;
-import Packets.Packet;
+import packets.DefaultPacket;
+import packets.Packet;
 import network.PacketSender;
 
 import java.io.IOException;
@@ -9,7 +8,7 @@ import java.util.Scanner;
 
 public class MyClient {
 
-    public static final String SERVER_HOSTNAME = "localhost";
+    public static final String SERVER_HOSTNAME = "system.bigbrainstuffs.com";
 
     DatagramSocket clientSocket;
 
@@ -28,8 +27,7 @@ public class MyClient {
 
         } catch(SocketException ex) {
             System.err.println(
-                    "Failed to initialize the client socket. " +
-                            "Is the port right?"
+                    "Failed to initialize the client socket. " + "Is the port right?"
             );
             ex.printStackTrace();
         }
@@ -43,7 +41,9 @@ public class MyClient {
             return;
         }
 
-        Packet packet = new ArrayPacket(1, 2, 3, 4, 5);//new DefaultPacket("George", "says hi!");
+//        Packet packet = new ArrayPacket(1, 2, 3, 4, 5);//new DefaultPacket("George", "says fuck!");
+
+        Packet packet = new DefaultPacket("Johnderer Mold", "🅱️ungus");
         clientSocket.setSoTimeout(1000);
         PacketSender.sendPacket(packet, clientSocket, serverAddress, EMAP.PORT);
     }
