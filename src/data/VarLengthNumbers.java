@@ -20,9 +20,9 @@ public class VarLengthNumbers {
 
             writer.writeByte((byte) (
 
-                (value & SEGMENT_BITS) |
+                    (value & SEGMENT_BITS) |
 
-                ((value & ~SEGMENT_BITS) != 0 ? CONTINUE_BIT : 0)
+                            ((value & ~SEGMENT_BITS) != 0 ? CONTINUE_BIT : 0)
             ));
 
             value >>>= 7;
@@ -34,9 +34,9 @@ public class VarLengthNumbers {
 
             writer.writeByte((byte) (
 
-                (value & SEGMENT_BITS) |
+                    (value & SEGMENT_BITS) |
 
-                ((value & ~SEGMENT_BITS) != 0 ? CONTINUE_BIT : 0)
+                            ((value & ~SEGMENT_BITS) != 0 ? CONTINUE_BIT : 0)
             ));
 
             value >>>= 7;

@@ -1,14 +1,14 @@
+import network.PacketReceiver;
+
 import java.io.IOException;
-import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.nio.charset.StandardCharsets;
 
 public class MyServer {
     DatagramSocket serverSocket;
 
     public static void main(String[] args) {
-        var server = new MyServer();
+        MyServer server = new MyServer();
         server.start();
     }
 
@@ -16,54 +16,11 @@ public class MyServer {
         if (serverSocket != null) return;
 
         try {
-
+            //cant host multiple
             serverSocket = new DatagramSocket(EMAP.PORT);
-            System.out.println(
-                    "Now listening on port " + EMAP.PORT
-            );
+            System.out.println("Now listening on port " + EMAP.PORT);
 
-            byte[] buffer = new byte[256];
-
-            while (!serverSocket.isClosed()) {
-
-                try {
-
-                    var incomingPacket = new DatagramPacket(buffer, buffer.length);
-                    serverSocket.receive(incomingPacket);
-                    var clientAddress = incomingPacket.getAddress();
-                    var clientPort = incomingPacket.getPort();
-                    var message = new String(
-
-                        incomingPacket.getData(),
-                        0,
-                        incomingPacket.getLength(),
-                        StandardCharsets.UTF_8
-                    );
-
-                    if (message.equalsIgnoreCase("exit")) {
-                        serverSocket.close();
-                        serverSocket = null;
-                        break;
-                    }
-
-                    System.out.println("Client: " + message);
-
-                    var outgoingPacket = new DatagramPacket(
-                        buffer, incomingPacket.getLength(),
-                        clientAddress, clientPort
-                    );
-
-                    // Send the packet.
-                    serverSocket.send(outgoingPacket);
-
-                }  catch (IOException ex) {
-                    System.err.println(
-                            "Communication error. " +
-                                    "Is there a problem with the client?"
-                    );
-                }
-
-            }
+            System.out.println("Packet received:" + PacketReceiver.receivePacket(serverSocket));
 
         } catch (SocketException ex) {
             System.err.println(
@@ -71,8 +28,11 @@ public class MyServer {
                             "Is the port already taken?"
             );
             ex.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
 
 }
+
