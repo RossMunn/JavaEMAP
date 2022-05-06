@@ -66,7 +66,7 @@ public class MyClient {
 
         listenerThread.start();
 
-        Packet packet = new DefaultPacket("Samderer Mold", "cock");
+        Packet packet = new DefaultPacket("Samderer Mold", "I mean test ahaha you saw nothing");
         PacketSender.sendPacket(packet, clientSocket, serverAddress, SLIM.PORT);
 
     }
