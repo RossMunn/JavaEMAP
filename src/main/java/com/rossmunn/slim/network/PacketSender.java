@@ -21,11 +21,12 @@ import java.util.UUID;
 public class PacketSender {
 
     public static void sendPacket(Packet packet, DatagramSocket socket, InetAddress address, int port) throws IOException {
-        if(packet.getSnowflake()==null) packet.setSnowflake(UUIDUtil.asBytes(UUID.randomUUID()));
+        if(packet.getSnowflake() == null) packet.setSnowflake(UUIDUtil.asBytes(UUID.randomUUID()));
         byte[] packetBytes = getPacketBytes(packet);
 
         int sendBufferSize = 1024;
         int maxLength = 980; //max length of body data in chunk
+
         ByteBuffer sendBuffer = ByteBuffer.allocate(sendBufferSize);
 
         byte[] hash = new byte[8];
@@ -36,7 +37,7 @@ public class PacketSender {
 
         int count = (int) Math.ceil(packetBytes.length / (float) maxLength);
 
-        while(byteIndex != packetBytes.length) {
+        while(byteIndex < packetBytes.length) {
             sendBuffer.rewind(); //reset buffer
 
             // Compute the size of the body
@@ -68,34 +69,21 @@ public class PacketSender {
 
             // Payload (Body)
             sendBuffer.put(packetBytes, byteIndex, payloadLength);
+
+            sendBuffer.flip();
+            DatagramPacket packetToSend = new DatagramPacket(
+                    sendBuffer.array(),
+                    0,
+                    sendBuffer.remaining(),
+                    address,
+                    port
+            );
+
+            socket.send(packetToSend);
+
+            // Increment counters for next chunk.
             byteIndex += payloadLength;
-
-            int errorCount = 0;
-            while (sendBuffer.hasRemaining()) {
-
-                //send packet
-                sendBuffer.flip();
-                DatagramPacket packetToSend = new DatagramPacket(
-                        sendBuffer.array(),
-                        0,
-                        sendBuffer.remaining(),
-                        address,
-                        port
-                );
-
-                socket.send(packetToSend);
-/*
-                byte[] receiveAckData = new byte[44];
-                if(receiveAck(socket, receiveAckData, packet.getSnowflake(), hash, index)){
-                    index++;
-                    break;
-                }
-                errorCount++;
-                if(errorCount >= 5){
-                    return;
-                }*/
-
-            }
+            index++;
         }
     }
 

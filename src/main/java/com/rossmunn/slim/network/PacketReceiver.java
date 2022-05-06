@@ -120,14 +120,7 @@ public class PacketReceiver {
         return p;
     }
 
-//    private static void sendAcknowledgement(DatagramSocket socket, InetAddress address, int port, byte[] sendDataBuffer, byte[] snowflake, byte[] hash, int index) throws IOException {
-//        ByteBuffer buffer = ByteBuffer.wrap(sendDataBuffer);
-//        buffer.put(snowflake);
-//        buffer.put(hash);
-//        buffer.putInt(index);
-//        socket.send(new DatagramPacket(buffer.array(), buffer.position(), address, port));
-//    }
-
+//ack
 
 }
 
