@@ -71,7 +71,7 @@ public class PacketSender {
             byteIndex += payloadLength;
 
             int errorCount = 0;
-            while (true) {
+            while (sendBuffer.hasRemaining()) {
 
                 //send packet
                 sendBuffer.flip();
@@ -84,7 +84,7 @@ public class PacketSender {
                 );
 
                 socket.send(packetToSend);
-
+/*
                 byte[] receiveAckData = new byte[44];
                 if(receiveAck(socket, receiveAckData, packet.getSnowflake(), hash, index)){
                     index++;
@@ -93,7 +93,7 @@ public class PacketSender {
                 errorCount++;
                 if(errorCount >= 5){
                     return;
-                }
+                }*/
 
             }
         }

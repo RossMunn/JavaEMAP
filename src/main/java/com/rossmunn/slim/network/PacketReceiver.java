@@ -44,8 +44,6 @@ public class PacketReceiver {
             chunks.put(chunk.snowflake.toString(), new Chunk[chunk.count]);
         }
 
-        System.out.println(Arrays.stream(chunks.get(chunk.snowflake.toString())).filter(Objects::nonNull).count());
-
         boolean didWriteChunk = false;
 
         // If this index has already been received, ignore it.
@@ -90,24 +88,6 @@ public class PacketReceiver {
         ByteBuffer packetBuffer = ByteBuffer.allocate(totalLength.get());
         packet.forEach(packetChunk -> packetBuffer.put(packetChunk.data));
         packetBuffer.flip(); // 'Seal' the packet buffer.
-
-//        int bytesReceived = firstChunk.data.length - buffer.position();
-//
-//
-//        byte[] sendAckBuffer = new byte[28];
-//        sendAcknowledgement(socket, address, port, sendAckBuffer, firstChunk.snowflake, firstChunk.hash, firstChunk.index);
-//
-//        Chunk lastChunk = firstChunk;
-//        while(bytesReceived < packetSize) {
-//
-//            Chunk chunk = receiveChunk(socket, buf);
-//            if(chunk.index == lastChunk.index + 1) {
-//                packetBuffer.put(chunk.data);
-//                bytesReceived += chunk.data.length;
-//                sendAcknowledgement(socket, address, port, sendAckBuffer, chunk.snowflake, chunk.hash, chunk.index);
-//                lastChunk = chunk;
-//            }
-//        }
 
         // Read packet header.
         if (packetBuffer.get() != DataTypeId.MAGIC || packetBuffer.getInt() != Magic.PACKET)

@@ -65,11 +65,6 @@ public class MyClient {
         });
 
         listenerThread.start();
-//        try {
-//            listenerThread.join();
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
 
         Packet packet = new DefaultPacket("Samderer Mold", "Bungus");
         PacketSender.sendPacket(packet, clientSocket, serverAddress, SLIM.PORT);
